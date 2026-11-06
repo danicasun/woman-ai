@@ -2,7 +2,7 @@
 
 ## Summary
 
-Upload photos or a LiDAR scan of an arm and get a print-ready kit: a hand scaled to the recipient, a gauntlet fitted to their actual forearm, a printability report, and a build guide for the volunteer. The goal is to cut the hours volunteers spend sizing and hand-fitting each device, so recipients wait less.
+Upload photos or a LiDAR scan of an arm and get a print-ready kit: a hand scaled to the recipient, a gauntlet fitted to their actual forearm, colors and designs the recipient picks, a printability report, and a build guide for the volunteer. The goal is to cut the hours volunteers spend sizing and hand-fitting each device, so recipients wait less.
 
 ## Background
 
@@ -52,6 +52,7 @@ Photo mode is primary because LiDAR is limited to expensive iPhone Pro models. M
 3. **Photo B, affected arm from the side:** same arm resting on its side, thumb up.
 4. **Photo C, sound hand:** flat on the sheet, fingers together. Gives palm width and length for scaling.
 5. **Optional:** tape-measure circumferences at the wrist and the widest part of the forearm. This is the single biggest accuracy boost.
+6. **Optional, design ideas:** describe the look in words or upload reference images (see [Personalization](#personalization)).
 
 Shoot from about 1 m away with 2× zoom. The arm's edges sit several centimetres above the paper, so up close they look bigger than they are. Correct the rest using the arm thickness from the other view.
 
@@ -76,18 +77,45 @@ Both input modes produce the same thing: a 3D shape of the arm plus landmarks, m
 ### Shared downstream
 
 1. **Choose the device (Claude):** pick a design and settings against e-NABLE's rules (which designs need a working wrist, scale limits, age and growth allowance) and explain why.
-2. **Generate parts:**
+2. **Design spec (Claude):** turn the recipient's description and reference images into colors for each part and a pattern for the gauntlet (see [Personalization](#personalization)).
+3. **Generate parts:**
    - **Hand:** run Paraglider's OpenSCAD files from the command line with the computed scale.
-   - **Gauntlet:** compute a distance field around the arm and keep a shell from the padding gap out to the gap plus a 3 mm wall. Cut a C-shaped opening so it slips on, add strap slots, and attach the stock hinge pieces at the wrist axis.
+   - **Gauntlet:** compute a distance field around the arm and keep a shell from the padding gap out to the gap plus a 3 mm wall. Cut a C-shaped opening so it slips on, add strap slots, attach the stock hinge pieces at the wrist axis, and add the chosen pattern to the outside.
    - **Fit-test ring:** a 15 mm slice of the gauntlet at its tightest point. It prints in about 15 minutes, so fit can be checked before a 6-hour print.
-3. **Printability (code):**
+4. **Printability (code):**
    - The mesh is closed and valid, and walls meet a minimum thickness.
+   - Pattern details are big enough to print.
    - Parts fit the printer bed; check overhangs and pick an orientation.
    - Slice with PrusaSlicer for print time and filament use.
-   - Export all parts on one build plate as a 3MF.
-4. **Visual review (Claude, bounded):** look at renders of the gauntlet over the arm and adjust only a few bounded settings (padding gap, trim lines, opening angle, strap positions). Three passes at most.
-5. **Build packet (Claude):** parts list, print settings, hardware, assembly steps and a fit checklist, plus a plain-language summary for the recipient in their own language.
-6. **Volunteer approval:** nothing gets printed until a volunteer signs off.
+   - Export all parts on one build plate as a 3MF, with each part's color.
+5. **Visual review (Claude, bounded):** look at renders of the gauntlet over the arm and adjust only a few bounded settings (padding gap, trim lines, opening angle, strap positions). Three passes at most.
+6. **Build packet (Claude):** parts list, filament colors, print settings, hardware, assembly steps and a fit checklist, plus a plain-language summary for the recipient in their own language.
+7. **Volunteer approval:** nothing gets printed until a volunteer signs off.
+
+## Personalization
+
+Many recipients are kids, and a device a kid helped design is one they'll be excited to wear. Recipients, or a parent, can describe the look they want in words ("purple and teal with stars", "make it look like a dragon") or upload reference images such as a favorite toy, a drawing, or a color swatch.
+
+### How it works
+
+1. **Design spec (Claude, vision):** turn the text and images into a structured spec:
+   - a color for each part: palm, fingers, gauntlet, pins and straps
+   - a pattern motif for the gauntlet
+   - optional text, such as a name
+
+   Map colors to real filament colors, ideally the volunteer's own stock, and suggest substitutes for anything they don't have.
+2. **Patterns:** raised (about 0.8 mm) or recessed motifs on the outside of the gauntlet only.
+   - Claude picks from a library of tested SVG motifs (stars, hearts, scales, lightning, snowflakes, paw prints) or writes a simple custom SVG, which is rendered and checked before use.
+   - The pattern is wrapped around the arm's long axis and added to the gauntlet's outer surface when the shell is built, so it works the same for photo and LiDAR inputs.
+3. **Keep-out zones:** no pattern near the strap slots, the hinge, the opening edges, or on the skin side.
+4. **Preview and changes:** the 3D viewer shows the colored, patterned device. The recipient can ask for changes in plain words ("bigger stars", "more purple") and approve the final look.
+5. **Printing:** the default is one color per part, which works on any single-color printer. If the volunteer has a multi-material printer (Bambu AMS, Prusa MMU), the 3MF can carry a two-color pattern on the gauntlet.
+
+### Guardrails
+
+- **Characters and logos:** turn requests like "Spider-Man" into an inspired-by palette and generic motifs (webs, red and blue) instead of copying trademarked logos.
+- **Reference images:** use them only to pull out colors and motifs, and don't store them. Ask families not to include the child's face.
+- **Printability:** details at least about 1 mm wide (for a 0.4 mm nozzle), and patterns never make walls thinner than the minimum.
 
 ## Where Claude is used
 
@@ -97,6 +125,7 @@ Both input modes produce the same thing: a 3D shape of the arm plus landmarks, m
 | Intake | Reads free-text goals, classifies the limb difference | Unstructured input |
 | Landmarks | Finds anatomy on images; code refines the numbers | Recognising anatomy, which plain geometry can't do |
 | Device choice | Applies e-NABLE guidelines, flags exceptions | Judgement calls on edge cases |
+| Design | Turns "purple dragon with stars" or a reference image into part colors, a pattern and real filament choices | Open-ended creative requests |
 | Review | Critiques renders, tweaks settings through tools | Catches things like "the opening is on the wrong side" |
 | Build guide | Personalised and translated | e-NABLE works in 100+ countries |
 
@@ -109,7 +138,8 @@ Both input modes produce the same thing: a 3D shape of the arm plus landmarks, m
 - **Images:** OpenCV (markers, straightening) and rembg or SAM 2 (background removal).
 - **Meshes:** trimesh, open3d (surface rebuild, distance fields), scikit-image (turning the distance field into a mesh), manifold3d (cutting and joining solids), pyvista (renders).
 - **CAD and slicing:** OpenSCAD command line (a recent build with the Manifold backend, which is much faster) and PrusaSlicer command line.
-- **Frontend:** React with react-three-fiber. Photo or scan upload, a 3D viewer with the gauntlet over the arm, a timeline of Claude's reasoning, and downloads.
+- **Patterns:** SVG motifs turned into images with cairosvg, then wrapped onto the gauntlet's outer surface.
+- **Frontend:** React with react-three-fiber. Photo or scan upload, a design box for text and reference images, a 3D viewer showing the colored gauntlet over the arm, a timeline of Claude's reasoning, and downloads.
 
 ## Testing without amputees
 
@@ -136,17 +166,17 @@ Both input modes produce the same thing: a 3D shape of the arm plus landmarks, m
 | 6–12 | Claude: photo check, landmarks, device choice and settings |
 | 8–18 | Frontend |
 | 12–16 | Printability checks, slicing, 3MF export |
-| 14–18 | LiDAR input path |
-| 16–20 | Review loop and build packet |
+| 14–18 | Personalization: design spec from text and images, part colors, gauntlet patterns |
+| 16–20 | LiDAR input path, review loop, build packet |
 | 20–24 | Accuracy study, printed fit rings, backup demo video, pitch |
 
 **Minimum demo:** photos → measurements → fitted gauntlet and scaled hand → printability report → download.
 
-**After that, in order:** LiDAR mode, the review loop, the build packet.
+**After that, in order:** personalization (colors first, then patterns and names), LiDAR mode, the review loop, the build packet.
 
 **Stretch:**
 - Ventilation hole patterns on the gauntlet.
-- Embossing the recipient's name.
+- Two-color patterns for multi-material printers.
 - Claude-written OpenSCAD adapters for specific goals ("hold a paintbrush").
 - A below-elbow socket mode.
 - The equity dashboard.
@@ -162,6 +192,9 @@ Both input modes produce the same thing: a 3D shape of the arm plus landmarks, m
 | Licensing | Most e-NABLE designs are Creative Commons; check each one and credit the designers |
 | Over-trusting automation | Volunteer approval step, bounded settings, fit-test ring before the full print |
 | Health data privacy | Process locally, delete after use, send Claude only renders and numbers |
+| Requests for trademarked characters | Inspired-by colors and generic motifs, no copied logos |
+| Kids' photos in reference images | Use only for colors and motifs, don't store, ask families to leave faces out |
+| Patterns too fine to print or weakening the gauntlet | Minimum detail size, keep-out zones, pattern added outside the minimum wall |
 
 ## Open questions
 
