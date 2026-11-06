@@ -40,6 +40,27 @@ Women are fitted less often and are barely represented in the data prosthetics a
 
 Pitch line: the evidence on women amputees is fragmented and low quality ([2024 systematic review](https://www.tandfonline.com/doi/pdf/10.1080/19498241.2024.2426959)), so we design from women's hand data directly.
 
+## Male vs. female hands
+
+Women's hands are not scaled-down men's hands. They are about 6% shorter but about 11% narrower, so one scale factor cannot fit both length and width.
+
+| Measure (ANSUR II means) | Men (n=4,082) | Women (n=1,986) | Women vs. men |
+| --- | --- | --- | --- |
+| Hand length | 193.3 mm | 181.1 mm | 6.3% shorter |
+| Hand breadth (knuckles) | 88.3 mm | 78.2 mm | 11.4% narrower |
+| Breadth ÷ length | 0.457 | 0.432 | Relatively narrower, longer fingers |
+
+The research agrees: hand breadth is the strongest sex difference, while length differs less ([2024 study](https://www.sciencedirect.com/science/article/pii/S2665910724000239), [Turkish sample, n=385](https://pubmed.ncbi.nlm.nih.gov/24951406/), [geometric morphometrics](https://www.cambridge.org/core/journals/twin-research-and-human-genetics/article/geometric-morphometric-assessment-of-hand-shape-and-comparison-to-the-2d4d-digit-ratio-as-a-marker-of-sexual-dimorphism/BAD1ABEC7C06C139F2A2F2D97AABABF8)).
+
+**The inequity, in numbers.** e-NABLE devices are one base model, scaled uniformly from knuckle width. Suppose that base has average male proportions; e-NABLE does not document whose hand it came from. Then for an average woman:
+
+- **Scaled to her knuckle width:** the hand comes out about 10 mm (5.5%) shorter than hers.
+- **Scaled to her hand length:** it comes out about 4.5 mm too wide, already past e-NABLE's 2–3 mm fit window.
+
+Pitch line: "Every e-NABLE hand starts as one shape and gets stretched evenly. Women's hands differ in shape, not just size, so they absorb the misfit." Our fix scales width and length separately, using women's data from ANSUR II.
+
+The ANSUR means above are from a [secondary summary](https://bodytype-calculator.com/average-hand-size/) of the [public ANSUR II data](https://www.openlab.psu.edu/ansur2/), and the misfit figures are our arithmetic on them. Recompute both from the ANSUR II CSVs before the video.
+
 ## Stat bank
 
 Pull from here for the video. Lead with the peer-reviewed and official stats; check the "verify" ones before using them on screen.
@@ -73,7 +94,7 @@ The target is under 2 mm mean error per hand dimension. That is inside e-NABLE's
 | HandAnthro (2026 preprint) | 3.80 mm mean error overall; 2.48 mm fingers; 6.17 mm palm/wrist; 97.8% usable captures | Single smartphone photo on letter paper vs. calipers, 44 dimensions | [arXiv 2609.37855](https://arxiv.org/abs/2609.37855) |
 | FreiHAND (3D hand mesh) | 5.3 mm PA-MPVPE (Hamba, NeurIPS 2024) | 3D hand shape from one image; alignment removes true scale | [FreiHAND](https://lmb.informatik.uni-freiburg.de/projects/freihand/), [Hamba](https://openreview.net/forum?id=pCJ0l1JVUX) |
 | ANSUR II observer error | Human measurer noise floor (value to look up) | How much two trained measurers disagree | [ANSUR II methods report](https://apps.dtic.mil/sti/pdfs/ADA611869.pdf) |
-| e-NABLE AI HandSizer (in testing) | ~1.2 cm (12 mm) average error, designer's own tests; Phoenix v3 only | Print scale from one photo of the sound hand next to a card; e-NABLE's current photo tool | [e-NABLE Device Sizing wiki](https://hub.e-nable.org/s/e-nable-devices/wiki/page/view?title=e-NABLE+Device+Sizing) |
+| e-NABLE AI HandSizer (in testing) | ~1.2 cm (12 mm) average error, designer's own tests; Phoenix v3 only. Not independently validated: use as a secondary point, lead with HandAnthro's 3.80 mm | Print scale from one photo of the sound hand next to a card; e-NABLE's current photo tool | [e-NABLE Device Sizing wiki](https://hub.e-nable.org/s/e-nable-devices/wiki/page/view?title=e-NABLE+Device+Sizing) |
 
 **Our test plan**
 
