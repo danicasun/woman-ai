@@ -73,6 +73,7 @@ The target is under 2 mm mean error per hand dimension. That is inside e-NABLE's
 | HandAnthro (2026 preprint) | 3.80 mm mean error overall; 2.48 mm fingers; 6.17 mm palm/wrist; 97.8% usable captures | Single smartphone photo on letter paper vs. calipers, 44 dimensions | [arXiv 2609.37855](https://arxiv.org/abs/2609.37855) |
 | FreiHAND (3D hand mesh) | 5.3 mm PA-MPVPE (Hamba, NeurIPS 2024) | 3D hand shape from one image; alignment removes true scale | [FreiHAND](https://lmb.informatik.uni-freiburg.de/projects/freihand/), [Hamba](https://openreview.net/forum?id=pCJ0l1JVUX) |
 | ANSUR II observer error | Human measurer noise floor (value to look up) | How much two trained measurers disagree | [ANSUR II methods report](https://apps.dtic.mil/sti/pdfs/ADA611869.pdf) |
+| e-NABLE AI HandSizer (in testing) | ~1.2 cm (12 mm) average error, designer's own tests; Phoenix v3 only | Print scale from one photo of the sound hand next to a card; e-NABLE's current photo tool | [e-NABLE Device Sizing wiki](https://hub.e-nable.org/s/e-nable-devices/wiki/page/view?title=e-NABLE+Device+Sizing) |
 
 **Our test plan**
 
